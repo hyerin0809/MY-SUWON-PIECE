@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MY SUWON PIECE</title>
+<style>
+:root{
+  --navy:#102f4b;
+  --navy2:#173f62;
+  --cream:#f6efe3;
+  --paper:#fffdf8;
+  --sand:#e6d8c5;
+  --brown:#a6784f;
+  --mint:#e9f0ea;
+  --gold:#c9a15d;
+  --red:#a85757;
+  --shadow:0 12px 28px rgba(16,47,75,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--cream);color:var(--navy);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{min-height:100vh}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:linear-gradient(#f8f2e9,#f3eadc)}
+.screen{display:none;min-height:100vh;padding:22px 18px 36px}
+.screen.active{display:block}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.brand{font-family:Georgia,serif;font-weight:700;letter-spacing:.04em}
+.iconbtn{border:0;background:transparent;color:var(--navy);font-size:24px;padding:6px;cursor:pointer}
+.hero{padding:12px 4px 6px}
+.kicker{font-size:11px;letter-spacing:.18em;font-weight:800;color:var(--brown);text-transform:uppercase}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:36px;line-height:1.05;margin:8px 0 8px}
+h2{font-family:Georgia,"Times New Roman",serif;font-size:26px;margin:6px 0 10px}
+h3{font-size:16px;margin:0 0 8px}
+p{line-height:1.65;margin:6px 0}
+.muted{font-size:13px;opacity:.68}
+.card{background:var(--paper);border:1px solid rgba(166,120,79,.22);border-radius:22px;padding:18px;box-shadow:var(--shadow);margin:14px 0}
+.progress-wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.progress-label{font-weight:800}
+.progress{height:11px;background:#e7ded0;border-radius:999px;overflow:hidden;margin-top:10px}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--navy),var(--navy2));transition:.35s}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.piece{
+  position:relative;background:var(--paper);border:1px solid rgba(166,120,79,.25);
+  border-radius:20px;padding:14px;min-height:132px;box-shadow:0 7px 18px rgba(16,47,75,.06);
+  cursor:pointer;transition:.18s;overflow:hidden
+}
+.piece:active{transform:scale(.98)}
+.piece.done{background:var(--mint);border-color:#9aaf9b}
+.piece.locked{opacity:.55;cursor:not-allowed}
+.piece-icon{font-size:28px}
+.piece-tag{font-size:10px;letter-spacing:.12em;color:var(--brown);font-weight:800;margin-top:8px}
+.piece-title{font-size:16px;font-weight:800;margin-top:2px}
+.piece-sub{font-size:12px;opacity:.62;margin-top:5px;line-height:1.35}
+.check{position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--navy);color:white;font-size:14px}
+.unlock{background:linear-gradient(135deg,#fff8e8,#f5e3bb);border-color:#d9ba78}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#eee3d3;color:var(--brown);font-size:11px;font-weight:800}
+.route{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.stop{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
+.num{width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
+.stop strong{display:block}
+.stop small{display:block;margin-top:3px;opacity:.65;line-height:1.45}
+.arrow{margin-left:14px;height:18px;border-left:1.5px dashed #b4a690}
+.mission{border:1px solid #ddcfbc;background:#fbf6ee;border-radius:16px;padding:14px;margin-top:10px}
+.mission-row{display:flex;gap:10px;align-items:flex-start;margin:9px 0}
+.dot{width:20px;height:20px;border:1.5px solid var(--navy);border-radius:6px;flex:none;margin-top:1px}
+.tip{background:#eef3f6;border-left:4px solid var(--navy);padding:12px 13px;border-radius:12px;font-size:13px;line-height:1.5;margin-top:12px}
+button{
+  width:100%;border:0;border-radius:15px;padding:14px 16px;font-size:15px;font-weight:800;
+  background:var(--navy);color:white;cursor:pointer;margin-top:12px
+}
+button.secondary{background:#e5dacb;color:var(--navy)}
+button.ghost{background:transparent;color:var(--navy);border:1px solid #cdbda8}
+button.gold{background:linear-gradient(90deg,#b98d48,#d0aa65)}
+.step-note{text-align:center;font-size:12px;opacity:.62;margin-top:10px}
+.final-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.theme{border:1px solid #d8c8b2;background:#fff;border-radius:16px;padding:12px;cursor:pointer;text-align:center}
+.theme.selected{border:2px solid var(--navy);background:#eef3f6}
+.theme b{display:block;margin-top:4px}
+input{width:100%;padding:13px 14px;border-radius:13px;border:1px solid #d8c8b2;background:white;font-size:15px;margin-top:8px;color:var(--navy)}
+label{display:block;font-size:12px;font-weight:800;color:var(--brown);margin-top:12px}
+.complete-box{text-align:center;padding:28px 16px}
+.bigcheck{width:68px;height:68px;border-radius:50%;background:var(--navy);color:white;margin:0 auto 14px;display:grid;place-items:center;font-size:34px}
+.final-mark{margin:18px auto 0;width:220px;aspect-ratio:1.55;border-radius:26px;background:linear-gradient(135deg,#e7d8bd,#f8f2e7);border:2px solid #c7a56e;display:grid;place-items:center;padding:18px}
+.final-mark .inner{width:100%;height:100%;border:1px dashed #b9945e;border-radius:18px;display:grid;place-items:center}
+.final-mark .inner b{font-family:Georgia,serif;font-size:24px}
+.final-mark .inner span{display:block;font-size:11px;margin-top:4px;opacity:.7}
+.navhome{display:flex;gap:8px;margin-top:10px}
+.navhome button{margin-top:0}
+.warning{font-size:12px;color:var(--red);margin-top:8px}
+.footer{font-size:11px;opacity:.48;text-align:center;margin-top:26px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <section id="home" class="screen active">
+    <div class="topbar">
+      <div class="brand">MY SUWON PIECE</div>
+      <button class="iconbtn" onclick="resetAll()" title="초기화">↺</button>
+    </div>
+
+    <div class="hero">
+      <div class="kicker">Collect · Explore · Complete</div>
+      <h1>나만의 순서로<br>수원을 모으다.</h1>
+      <p class="muted">원하는 PIECE를 선택하세요. 관광지 동선과 미션을 완료하면 조각이 수집됩니다.</p>
+    </div>
+
+    <div class="card">
+      <div class="progress-wrap">
+        <div>
+          <div class="kicker">MY COLLECTION</div>
+          <div class="progress-label" id="countLabel">0 / 7 PIECES</div>
+        </div>
+        <div class="badge" id="statusBadge">여행 시작</div>
+      </div>
+      <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+    </div>
+
+    <div class="grid" id="pieceGrid"></div>
+
+    <div id="finalUnlock" class="card unlock" style="display:none">
+      <div class="badge">UNLOCKED</div>
+      <h2>7 + 1<br>FINAL PIECE</h2>
+      <p>수원의 7개 조각을 모두 모았습니다. 이제 가장 기억에 남은 여행 테마를 골라 <b>나만의 PIECE</b>를 완성하세요.</p>
+      <button class="gold" onclick="openFinal()">나만의 PIECE 만들기</button>
+    </div>
+
+    <div class="footer">공모전 시연용 프로토타입 · 실제 운영 시 현장 QR/GPS 인증과 실물 마그넷 수령 기능을 연동할 수 있습니다.</div>
+  </section>
+
+  <section id="detail" class="screen">
+    <div class="topbar">
+      <button class="iconbtn" onclick="goHome()">←</button>
+      <div class="brand" id="detailBrand">PIECE</div>
+      <div style="width:36px"></div>
+    </div>
+    <div id="detailContent"></div>
+  </section>
+
+  <section id="finalScreen" class="screen">
+    <div class="topbar">
+      <button class="iconbtn" onclick="goHome()">←</button>
+      <div class="brand">FINAL PIECE</div>
+      <div style="width:36px"></div>
+    </div>
+
+    <div class="hero">
+      <div class="kicker">7 + 1 = MY SUWON</div>
+      <h1>마지막 한 조각은<br>바로 나.</h1>
+      <p class="muted">수원 여행에서 가장 기억에 남은 테마를 고르고 이름과 여행 날짜를 새겨보세요.</p>
+    </div>
+
+    <div class="card">
+      <h3>01. 나의 여행 테마 선택</h3>
+      <div class="final-choice">
+        <div class="theme selected" data-theme="HISTORY" onclick="selectTheme(this)"><div>🏯</div><b>HISTORY</b></div>
+        <div class="theme" data-theme="TASTE" onclick="selectTheme(this)"><div>🍽️</div><b>TASTE</b></div>
+        <div class="theme" data-theme="NATURE" onclick="selectTheme(this)"><div>🌿</div><b>NATURE</b></div>
+        <div class="theme" data-theme="NIGHT" onclick="selectTheme(this)"><div>🌙</div><b>NIGHT</b></div>
+      </div>
+
+      <h3 style="margin-top:20px">02. 각인 정보</h3>
+      <label for="engraveName">NAME</label>
+      <input id="engraveName" placeholder="예: SUWON">
+      <label for="engraveDate">TRAVEL DATE</label>
+      <input id="engraveDate" type="date">
+      <button class="gold" onclick="completeFinal()">FINAL PIECE 완성하기</button>
+    </div>
+  </section>
+
+  <section id="completeScreen" class="screen">
+    <div class="complete-box">
+      <div class="bigcheck">✓</div>
+      <div class="kicker">MY SUWON COMPLETE</div>
+      <h1>7 + 1 =<br>MY SUWON</h1>
+      <p id="completeText"></p>
+      <div class="final-mark">
+        <div class="inner">
+          <div>
+            <b>SUWON</b>
+            <span id="engravingPreview"></span>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;margin-top:22px">
+        <h3>현장 운영 시</h3>
+        <p class="muted">이 완주 화면을 관광안내소에서 확인한 뒤 FINAL PIECE를 선택하고, 이름과 여행 날짜를 레이저 각인해 실물 마그넷을 완성합니다.</p>
+      </div>
+      <button onclick="goHome()">PIECE 보관함으로 돌아가기</button>
+      <button class="secondary" onclick="resetAll()">처음부터 다시 체험하기</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const pieces = {
+  heritage:{
+    tag:"HERITAGE", title:"헤리티지 PIECE", icon:"🏯",
+    desc:"수원화성의 대표 유산을 따라 걸으며 역사 속 단서를 찾는 미션",
+    route:[
+      ["화성행궁광장","여행 시작 및 헤리티지 미션 확인"],
+      ["화성행궁","정조와 수원화성의 이야기를 확인"],
+      ["화서문·성곽길","성곽의 구조와 주변 풍경 관찰"],
+      ["장안문","마지막 단서를 확인하고 PIECE 수령 거점으로 이동"]
+    ],
+    missions:[
+      "화성행궁에서 가장 기억에 남는 공간 1곳을 선택하기",
+      "성곽길에서 수원화성을 상징하는 요소 1개 찾기",
+      "장안문 도착 후 현장 QR을 스캔해 완주 인증하기"
+    ],
+    tip:"실제 운영 시 마지막 QR 인증이 완료되면 앱 속 HERITAGE PIECE가 활성화되고, 지정 관광안내소에서 실물 마그넷 조각을 받을 수 있습니다."
+  },
+  park:{
+    tag:"PARK", title:"공원 PIECE", icon:"🌳",
+    desc:"도심 속 수원의 자연을 발견하는 자유형 산책 미션",
+    route:[
+      ["광교호수공원 입구","공원 미션 시작"],
+      ["호수 산책로","수변 경관을 따라 자유롭게 이동"],
+      ["전망 포인트","가장 마음에 드는 풍경을 선택"],
+      ["안내 거점","미션 인증 후 PIECE 수령"]
+    ],
+    missions:[
+      "공원에서 가장 마음에 드는 풍경 포인트 1곳 찾기",
+      "수원의 자연을 표현하는 색 1가지를 선택하기",
+      "지정 QR을 스캔해 방문 인증하기"
+    ],
+    tip:"사진 촬영을 필수로 하지 않고, 현장 선택형 미션과 QR 인증을 결합해 부담을 낮춘 형태입니다."
+  },
+  local:{
+    tag:"LOCAL", title:"로컬 PIECE", icon:"🛍️",
+    desc:"행궁동 골목을 걸으며 나만의 로컬 취향을 발견하는 미션",
+    route:[
+      ["행리단길 진입","로컬 탐색 시작"],
+      ["독립상점·공방","취향에 맞는 가게 자유 방문"],
+      ["골목 상권","지역 브랜드 및 소규모 점포 경험"],
+      ["지정 거점","로컬 미션 인증"]
+    ],
+    missions:[
+      "가장 마음에 든 로컬숍 또는 공방 1곳 선택하기",
+      "그 장소에서 기억에 남는 상품·공간 요소 1개 찾기",
+      "현장 QR을 통해 LOCAL PIECE 인증하기"
+    ],
+    tip:"특정 점포를 강제하지 않고 참여 가맹점 중 자유롭게 선택하도록 설계하면 상권 전체로 동선을 분산할 수 있습니다."
+  },
+  market:{
+    tag:"MARKET", title:"시장 PIECE", icon:"🧺",
+    desc:"팔달문 일대 전통시장을 이동하며 실제 소비로 연결되는 미션",
+    route:[
+      ["팔달문 관광안내 거점","시장 미션 시작"],
+      ["전통시장 1","먹거리·상품 탐색"],
+      ["전통시장 2","다른 시장으로 이동"],
+      ["팔달문 인근","인증 후 PIECE 수령"]
+    ],
+    missions:[
+      "서로 다른 시장 또는 점포 2곳 이상 방문하기",
+      "먹거리·상품 중 하나를 직접 경험하거나 구매하기",
+      "지정 QR을 스캔해 미션 완료하기"
+    ],
+    tip:"시장 PIECE는 단순 방문 인증이 아니라 복수 점포 이동을 유도해 체류시간과 지역 소비를 함께 만드는 구조입니다."
+  },
+  taste:{
+    tag:"TASTE", title:"미식 PIECE", icon:"🍽️",
+    desc:"수원의 맛을 직접 경험하고 나만의 메뉴를 선택하는 미션",
+    route:[
+      ["팔달문·행궁동 일대","미식 선택 시작"],
+      ["참여 음식점","수원 대표 메뉴 또는 로컬 메뉴 체험"],
+      ["인근 상권","카페·디저트 등 자유 연계"],
+      ["지정 거점","미식 인증 후 PIECE 수령"]
+    ],
+    missions:[
+      "참여 음식점 중 원하는 곳 1곳을 자유롭게 선택하기",
+      "가장 기억에 남은 맛 또는 메뉴를 하나 정하기",
+      "매장 또는 거점 QR로 TASTE PIECE 인증하기"
+    ],
+    tip:"미식 PIECE는 특정 맛집 한 곳이 아니라 여러 제휴처를 선택 가능하게 해 관광객의 자유도와 상권 참여 폭을 확보합니다."
+  },
+  museum:{
+    tag:"MUSEUM", title:"박물관 PIECE", icon:"🏛️",
+    desc:"수원의 역사와 문화를 내 취향대로 골라보는 전시 선택형 미션",
+    route:[
+      ["박물관 인포메이션","미션 안내 확인"],
+      ["상설·기획 전시","관심 있는 전시 자유 관람"],
+      ["나의 선택","가장 기억에 남는 유물·전시 선정"],
+      ["인포메이션","미션 확인 후 PIECE 수령"]
+    ],
+    missions:[
+      "관심 있는 전시 구역을 자유롭게 선택해 관람하기",
+      "가장 기억에 남은 유물 또는 전시 1개 선택하기",
+      "박물관 인포메이션의 QR로 완료 인증하기"
+    ],
+    tip:"관람객에게 정답을 요구하기보다 스스로 전시를 선택하게 해 박물관 경험의 진입장벽을 낮춥니다."
+  },
+  night:{
+    tag:"NIGHT", title:"야경 PIECE", icon:"🌙",
+    desc:"18시 이후에만 열리는 수원의 밤 미션",
+    route:[
+      ["수원화성 일대","18시 이후 NIGHT 미션 활성화"],
+      ["야간 산책 구간","조명과 성곽의 야경 감상"],
+      ["야간 상권","카페·간식 등 자유 연계"],
+      ["지정 야간 거점","NIGHT PIECE 인증"]
+    ],
+    missions:[
+      "18시 이후 NIGHT 미션 화면을 활성화하기",
+      "야간 경관 포인트 1곳을 직접 방문하기",
+      "현장 QR을 스캔해 NIGHT PIECE 인증하기"
+    ],
+    tip:"실제 운영에서는 시간 조건을 적용해 야간 방문을 유도하고, 주변 카페·상권 소비와 자연스럽게 연결할 수 있습니다."
+  }
+};
+
+let collected = new Set(JSON.parse(localStorage.getItem("mysuwon_collected") || "[]"));
+let selectedTheme = localStorage.getItem("mysuwon_theme") || "HISTORY";
+let currentPiece = null;
+
+function save(){
+  localStorage.setItem("mysuwon_collected", JSON.stringify([...collected]));
+}
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+function renderHome(){
+  const grid=document.getElementById("pieceGrid");
+  grid.innerHTML="";
+  Object.entries(pieces).forEach(([key,p])=>{
+    const done=collected.has(key);
+    const el=document.createElement("div");
+    el.className="piece"+(done?" done":"");
+    el.onclick=()=>openPiece(key);
+    el.innerHTML=`
+      ${done?'<div class="check">✓</div>':''}
+      <div class="piece-icon">${p.icon}</div>
+      <div class="piece-tag">${p.tag}</div>
+      <div class="piece-title">${p.title}</div>
+      <div class="piece-sub">${done?'수집 완료 · 다시 보기':'동선과 미션 보기'}</div>`;
+    grid.appendChild(el);
+  });
+  const n=collected.size;
+  document.getElementById("countLabel").textContent=`${n} / 7 PIECES`;
+  document.getElementById("progressBar").style.width=`${(n/7)*100}%`;
+  document.getElementById("statusBadge").textContent=n===0?"여행 시작":n===7?"7개 수집 완료":`${7-n}개 남음`;
+  document.getElementById("finalUnlock").style.display=n===7?"block":"none";
+}
+function goHome(){
+  renderHome();
+  show("home");
+}
+function openPiece(key){
+  currentPiece=key;
+  const p=pieces[key];
+  document.getElementById("detailBrand").textContent=p.tag+" PIECE";
+  const route=p.route.map((r,i)=>`
+    <div class="stop">
+      <div class="num">${i+1}</div>
+      <div><strong>${r[0]}</strong><small>${r[1]}</small></div>
+    </div>${i<p.route.length-1?'<div class="arrow"></div>':''}
+  `).join("");
+  const missions=p.missions.map(m=>`
+    <div class="mission-row"><div class="dot"></div><div>${m}</div></div>
+  `).join("");
+  const already=collected.has(key);
+  document.getElementById("detailContent").innerHTML=`
+    <div class="hero">
+      <div class="piece-icon" style="font-size:42px">${p.icon}</div>
+      <div class="kicker">${p.tag} PIECE</div>
+      <h1>${p.title}</h1>
+      <p class="muted">${p.desc}</p>
+    </div>
+
+    <div class="card">
+      <div class="badge">추천 관광 동선</div>
+      <div class="route">${route}</div>
+    </div>
+
+    <div class="card">
+      <div class="badge">MISSION</div>
+      <h3 style="margin-top:10px">이 PIECE를 얻으려면</h3>
+      <div class="mission">${missions}</div>
+      <div class="tip">${p.tip}</div>
+      ${already
+        ? `<button class="secondary" onclick="goHome()">이미 수집한 PIECE · 보관함으로</button>`
+        : `<button onclick="completeMission('${key}')">미션 완료하고 ${p.tag} PIECE 받기</button>`
+      }
+      <div class="step-note">※ 시연 버전에서는 버튼으로 현장 QR 인증을 대신합니다.</div>
+    </div>
+  `;
+  show("detail");
+}
+function completeMission(key){
+  collected.add(key);
+  save();
+  renderHome();
+  show("home");
+  setTimeout(()=>{
+    const badge=document.getElementById("statusBadge");
+    badge.textContent=`${pieces[key].tag} 수집 완료 ✓`;
+  },150);
+}
+function openFinal(){
+  if(collected.size<7){return;}
+  document.querySelectorAll(".theme").forEach(t=>{
+    t.classList.toggle("selected",t.dataset.theme===selectedTheme);
+  });
+  document.getElementById("engraveDate").value =
+    localStorage.getItem("mysuwon_date") || new Date().toISOString().slice(0,10);
+  document.getElementById("engraveName").value =
+    localStorage.getItem("mysuwon_name_public") || "";
+  show("finalScreen");
+}
+function selectTheme(el){
+  selectedTheme=el.dataset.theme;
+  localStorage.setItem("mysuwon_theme",selectedTheme);
+  document.querySelectorAll(".theme").forEach(t=>t.classList.remove("selected"));
+  el.classList.add("selected");
+}
+function completeFinal(){
+  const name=(document.getElementById("engraveName").value || "YOUR NAME").trim();
+  const date=document.getElementById("engraveDate").value || new Date().toISOString().slice(0,10);
+  localStorage.setItem("mysuwon_name_public",name);
+  localStorage.setItem("mysuwon_date",date);
+  localStorage.setItem("mysuwon_theme",selectedTheme);
+  document.getElementById("completeText").innerHTML=
+    `<b>${name}</b>님의 FINAL PIECE는 <b>${selectedTheme}</b>입니다.<br>수원의 7개 조각에 나만의 1개 조각이 더해졌습니다.`;
+  document.getElementById("engravingPreview").textContent=`${name} · ${date}`;
+  show("completeScreen");
+}
+function resetAll(){
+  if(!confirm("수집한 PIECE와 FINAL PIECE 정보를 모두 초기화할까요?")) return;
+  collected.clear();
+  localStorage.removeItem("mysuwon_collected");
+  localStorage.removeItem("mysuwon_name_public");
+  localStorage.removeItem("mysuwon_date");
+  localStorage.removeItem("mysuwon_theme");
+  selectedTheme="HISTORY";
+  renderHome();
+  show("home");
+}
+renderHome();
+</script>
+</body>
+</html>
